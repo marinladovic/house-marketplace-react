@@ -97,8 +97,8 @@ function SignIn() {
 
           {/* Google OAuth Component */}
 
-          {/* Link to /signup route */}
-          <Link to="/signup" className="registerLink">
+          {/* Link to /sign-up route */}
+          <Link to="/sign-up" className="registerLink">
             Sign Up Instead
           </Link>
         </main>
