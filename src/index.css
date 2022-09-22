@@ -373,6 +373,7 @@ button {
 .exploreCategories {
   display: flex;
   justify-content: space-between;
+  maring-bottom: 6rem;
 }
 .exploreCategories a {
   width: 48%;
