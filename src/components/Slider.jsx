@@ -42,6 +42,10 @@ function Slider() {
     return <Spinner />;
   }
 
+  if (listings.length === 0) {
+    return <></>;
+  }
+
   return (
     listings && (
       <>
@@ -62,12 +66,9 @@ function Slider() {
                 <p className="swiperSlideText">{data.name}</p>
                 <p className="swiperSlidePrice">
                   &euro;{' '}
-                  {data.discountedPrice
+                  {(data.discountedPrice ?? data.regularPrice)
                     .toString()
-                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',') ??
-                    data.regularPrice
-                      .toString()
-                      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}{' '}
                   {data.type === 'rent' && '/ Month'}
                 </p>
               </div>

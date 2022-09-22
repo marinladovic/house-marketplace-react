@@ -17,6 +17,7 @@ import ListingItem from '../components/ListingItem';
 function Category() {
   const [listings, setListings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [lastFetchedListing, setLastFetchedListing] = useState(null);
 
   const params = useParams();
 
@@ -36,6 +37,10 @@ function Category() {
 
         // Execute the query and get snapshot
         const querySnapshot = await getDocs(q);
+
+        // Get the last visible document
+        const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+        setLastFetchedListing(lastVisible);
 
         // Get the documents from the snapshot and push them to an new array
         const listings = [];
@@ -57,6 +62,41 @@ function Category() {
 
     fetchListings();
   }, [params.categoryName]);
+
+  // Pagination - Load more listings
+  const onFetchMoreListings = async () => {
+    try {
+      const listingRef = collection(db, 'listings');
+
+      // Create a query against the collection
+      const q = query(
+        listingRef,
+        where('type', '==', params.categoryName),
+        orderBy('timestamp', 'desc'),
+        startAfter(lastFetchedListing),
+        limit(10)
+      );
+
+      const querySnapshot = await getDocs(q);
+
+      const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+      setLastFetchedListing(lastVisible);
+
+      const listings = [];
+      querySnapshot.forEach((doc) => {
+        return listings.push({
+          id: doc.id,
+          data: doc.data(),
+        });
+      });
+
+      // Set the listings state
+      setListings((prevState) => [...prevState, ...listings]);
+      setLoading(false);
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   return (
     <div className="category">
@@ -82,6 +122,14 @@ function Category() {
                 />
               ))}
             </ul>
+
+            <br />
+            <br />
+            {lastFetchedListing && (
+              <p className="loadMore" onClick={onFetchMoreListings}>
+                Load More
+              </p>
+            )}
           </main>
         </>
       ) : (
